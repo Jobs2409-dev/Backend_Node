@@ -72,6 +72,7 @@ export const obtenerReclamos = async (req, res) => {
     }
 };
 
+
 // Actualizar estado del reclamo
 export const cambiarEstadoReclamo = async (req, res) => {
     try {
@@ -92,6 +93,17 @@ export const cambiarEstadoReclamo = async (req, res) => {
         });
 
         await reclamo.save();
+
+        // Emitir actualización en tiempo real
+        const io = req.app.get('io');
+        if (io) {
+            io.emit('estado_actualizado', {
+                mensaje: `El reclamo "${reclamo.titulo}" pasó a ${estado}`,
+                reclamoId: reclamo._id,
+                usuarioId: String(reclamo.usuario_id),
+                estado
+            });
+        }
 
         res.status(200).json({
             mensaje: 'Estado del reclamo actualizado exitosamente',

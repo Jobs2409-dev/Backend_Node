@@ -18,6 +18,10 @@ const usuarioSchema = new mongoose.Schema({
         type: String,
         enum: ['VECINO', 'OPERADOR', 'ADMIN'],
         default: 'VECINO'
+    },
+    activo: {
+        type: Boolean,
+        default: true
     }
 }, {
     timestamps: true
