@@ -1,0 +1,38 @@
+name: CI Backend - VozVecinal
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    name: Ejecutar pruebas con Jest y Supertest
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Clonar repositorio
+        uses: actions/checkout@v4
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Instalar dependencias
+        run: npm ci
+
+      - name: Ejecutar suite de tests
+        run: npm test
+        env:
+          NODE_ENV: test
+          JWT_SECRET: clave_secreta_ci_testing_12345
+          MONGO_URI: mongodb://localhost:27017/vozvecinal_test
+          DB_HOST: 127.0.0.1
+          DB_PORT: 3306
+          DB_USER: root
+          DB_PASSWORD: ''
+          DB_NAME: vozvecinal_test
+          GEMINI_API_KEY: fake_key_para_ci
