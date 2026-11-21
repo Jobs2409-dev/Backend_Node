@@ -16,6 +16,29 @@ jobs:
         image: mongo:7.0
         ports:
           - 27017:27017
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: vozvecinal_test
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --password=$$MYSQL_ROOT_PASSWORD"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
+    env:
+      NODE_ENV: test
+      JWT_SECRET: clave_secreta_ci_testing_12345
+      MONGO_URI: mongodb://127.0.0.1:27017/vozvecinal_test
+      DB_HOST: 127.0.0.1
+      DB_PORT: 3306
+      DB_USER: root
+      DB_PASSWORD: root
+      DB_NAME: vozvecinal_test
+      GEMINI_API_KEY: fake_key_para_ci
 
     steps:
       - name: Clonar repositorio
@@ -30,15 +53,8 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
+      - name: Preparar esquema MySQL de pruebas
+        run: node tests/setup-mysql.js
+
       - name: Ejecutar suite de tests
         run: npm test
-        env:
-          NODE_ENV: test
-          JWT_SECRET: clave_secreta_ci_testing_12345
-          MONGO_URI: mongodb://127.0.0.1:27017/vozvecinal_test
-          DB_HOST: 127.0.0.1
-          DB_PORT: 3306
-          DB_USER: root
-          DB_PASSWORD: ''
-          DB_NAME: vozvecinal_test
-          GEMINI_API_KEY: fake_key_para_ci
