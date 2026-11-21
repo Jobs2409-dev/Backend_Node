@@ -11,6 +11,12 @@ jobs:
     name: Ejecutar pruebas con Jest y Supertest
     runs-on: ubuntu-latest
 
+    services:
+      mongodb:
+        image: mongo:7.0
+        ports:
+          - 27017:27017
+
     steps:
       - name: Clonar repositorio
         uses: actions/checkout@v4
@@ -29,7 +35,7 @@ jobs:
         env:
           NODE_ENV: test
           JWT_SECRET: clave_secreta_ci_testing_12345
-          MONGO_URI: mongodb://localhost:27017/vozvecinal_test
+          MONGO_URI: mongodb://127.0.0.1:27017/vozvecinal_test
           DB_HOST: 127.0.0.1
           DB_PORT: 3306
           DB_USER: root
